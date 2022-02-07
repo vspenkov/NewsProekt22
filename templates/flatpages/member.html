@@ -1,0 +1,18 @@
+{% extends 'flatpages/default.html' %}
+
+{% block title %}
+Personal account
+{% endblock title %}
+
+
+
+{% block content %}
+{% if user.is_authenticated %}
+
+<h1>Личный кабинет пользователя</h1>
+<h2>Добро пожаловать, {{ user.username }} </h2>
+
+{% endif %}
+
+<i><FONT color="blue", size="5">{{ flatpage.content }}</FONT></i>
+{% endblock content %}

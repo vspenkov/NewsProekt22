@@ -1,0 +1,31 @@
+{% extends 'flatpages/default.html' %}
+{% load custom_filters %}
+
+
+{% block title %}
+News
+{% endblock title %}
+
+<!-- В контенте на странице мы выводим все товары -->
+{% block content %}
+<h2>Вы действительно хотите удалить пост?</h2>
+        <table>
+            <tr>
+                    {{ news_one.title| censor }}
+            </tr>
+            <br>
+            <tr>
+                    {{ news_one.dataCreation|date:'d M Y H:m' }}
+            </tr>
+            <hr>
+            <tr>
+                    {{ news_one.text|censor}}
+            </tr>
+
+        </table>
+<form method="POST" class="post-form">
+    {% csrf_token %}
+    <input type="submit"  value="подтвердить">
+
+</form>
+{% endblock content %}

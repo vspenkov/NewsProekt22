@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title> Дайджест публикаций по категории: {{ category  }} </title>
+</head>
+<body>
+    <h1> Здравствуйте, новые статьи из категории {{  category  }} за прошлую неделю в вашем разделе! </h1>
+<hr>
+{% for news in text %}
+{{ news }}
+{% endfor%}
+<br>
+</body>
+</html>

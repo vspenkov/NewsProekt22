@@ -1,0 +1,52 @@
+{% extends 'flatpages/default.html' %}
+{% load custom_filters %}
+
+{% block title %}
+Search
+{% endblock title %}
+
+
+<!-- В контенте на странице мы выводим все товары -->
+{% block content %}
+<a href="{% url 'add' %}" class="btn btn-primary">Добавить</a>
+<form method="GET">
+        <div class ="col form-control ">
+            {{ filters.form }}<!-- Форму от фильтров за нас сделает django. А вот кнопку, увы придётся делать самому -->
+            <input type="submit" class="btn btn-primary" value="Поиск">
+        </div>
+</form>
+
+        <table>
+            <tr>
+                <td>
+                    <h4>Заголовок</h4>
+                </td>
+                <td>
+                    <h4>Дата публикации</h4>
+                </td>
+                <td>
+                    <h4>Красткое содержание</h4>
+                </td>
+                <td>
+                    <h4>Автор</h4>
+                </td>
+            </tr>
+            <hr>
+
+    {% for news_one in filters.qs %} <!-- Для каждого товара будете генерироваться новая строчка, т.е. новый html код. При этом сам цикл работет точно также, как и в python. product — переменная цикла, т.е. наш товар взятый из общего списка -->
+        <tr>
+            <td>
+                <a class="nav-link" href="http://127.0.0.1:8000/news/{{ news_one.id }}">{{ news_one.heading|censor }}</a>
+            </td>
+            <td>
+                {{ news_one.data_create|date:'d M Y ' }} <!-- дописываем специальный фильтр, чтобы ограничить количество символов до 20. Все остальные символы превратятся в многоточие. -->
+            </td>
+            <td>
+                {{ news_one.text|truncatewords:20 | censor }}
+            </td>
+            <td>
+                {{ news_one.author }}
+            </td>
+    {% endfor %}
+
+{% endblock content %}
