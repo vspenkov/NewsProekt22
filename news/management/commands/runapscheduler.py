@@ -30,9 +30,6 @@ def my_job():
 
 
         for user in category.subscriber.all():
-            # print('____________________________', user.email, '___________________________________')
-            # print()
-            # print('Письмо, отправленное по адресу: ', user.email)
             send_mail(
                         f'Новости за неделю по категории {category}!',
                         f'Новости за неделю: \n {send_news}',

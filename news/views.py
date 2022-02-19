@@ -1,11 +1,15 @@
 from django.views.generic import ListView, DetailView, CreateView, DeleteView, UpdateView
 from .models import Author, Category, Post, PostCategory, Comment, User
-from datetime import datetime
+from datetime import datetime, timedelta
 from .filters import PostFilter
 from .forms import PostForm
 from django.shortcuts import redirect
 from django.core.mail import send_mail
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+#для асинхронных задач celery
+from .tasks import send_week_digest
+from django.utils import timezone
+
 
 #Дженерик всех новостей
 class NewsList(ListView):
@@ -66,6 +70,7 @@ class NewsAdd(PermissionRequiredMixin, LoginRequiredMixin, CreateView):
     def post(self, request, *args, **kwargs):
         form = self.get_form()
         if form.is_valid():
+
             return self.form_valid(form)
         else:
             return self.form_invalid(form)
@@ -75,6 +80,17 @@ class NewsAdd(PermissionRequiredMixin, LoginRequiredMixin, CreateView):
         post.author = Author.objects.get(authorUser=self.request.user)
         post.save()
         return super().form_valid(form)
+
+    # def send_sub_mail(self, instance):
+    #     for category in instance.post_category.all():
+    #         subjects = f'Добавлен пост {instance.heading} в {category}'
+    #         texts = instance.text[:50]
+    #         for user in category.subscriber.all():
+    #             sub_mail = user.email
+    #             subs_news.delay(subjects, texts, sub_mail)
+
+
+
 
 #Дженерик редактирования новости
 class NewsUpdate(PermissionRequiredMixin, LoginRequiredMixin, UpdateView):
@@ -130,5 +146,15 @@ class Category_Sub(UpdateView):
             Category.objects.get(pk=self.kwargs.get('pk')).subscriber.remove(user)
 
         return redirect(request.META.get('HTTP_REFERER'))
+
+
+def week_digest():
+    send_week_digest.delay()
+
+week_digest()
+
+
+
+
 
 # Create your views here.

@@ -3,6 +3,7 @@ from django.dispatch import receiver # импортируем нужный де�
 from django.core.mail import send_mail
 from .models import Post
 
+
 @receiver(m2m_changed, sender = Post.post_category.through)
 def subs_news(sender, instance, **kwargs):
     for category in instance.post_category.all():
