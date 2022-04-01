@@ -10,6 +10,14 @@ def censor(value):
         'бля', 'блядь', 'гандон', 'дрочить', 'хуй', 'хуйло', 'шлюха', 'прошмандовка', 'шлюх',
         'пизда', 'еблан', 'манда', 'целка', 'ебать', 'пиздец', 'ебушки-воробушки', 'срать'
     ]
+    censor_new = []
+
     for i in censor_word:
-        value = value.replace(i, 'Цензура')
+        slovo = censor_new.append(i[0]+'*'*(len(i)-2)+i[-1])
+        value = value.replace(i, str(slovo))
     return value
+    #
+    #
+    # for i in censor_word:
+    #     value = value.replace(i, 'Цензура')
+    # return value

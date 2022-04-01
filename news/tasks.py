@@ -1,11 +1,10 @@
-from celery import shared_task, app
+from celery import shared_task
 from django.core.mail import send_mail
-from celery.schedules import crontab
-from .models import User, Post, PostCategory, Category
+from .models import Post, Category
 from datetime import datetime, timedelta
 
 
-#Таска по отправке дайджеста раз в
+#Таска по отправке дайджеста раз в неделю
 @shared_task
 def send_week_digest():
     print('Посты за неделю')
@@ -22,10 +21,12 @@ def send_week_digest():
 
         for user in category.subscriber.all():
             sub_send_mail = user.email
-            sub_send_name = user.username
-            send_mail(
-                subject = f'Новости за неделю по категории {sub_send_name}!',
-                message = f'Новости за неделю: \n {send_news}',
-                from_email = 'vladislav.penkov1993@yandex.ru',
-                recipient_list = [sub_send_mail],
-            )
+            #Добавить фильтрацию чтобы был не пустой список
+            if len(send_news) != 0:
+                send_mail(
+                    subject = 'Дайджест за неделю!',
+                    message = f'Новости за неделю: \n {send_news}',
+                    from_email = 'vladislav.penkov1993@yandex.ru',
+                    recipient_list = [sub_send_mail],
+                )
+

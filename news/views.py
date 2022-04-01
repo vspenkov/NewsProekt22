@@ -9,6 +9,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMix
 #для асинхронных задач celery
 from .tasks import send_week_digest
 from django.utils import timezone
+# импортируем наш кэш
+from django.core.cache import cache
 
 
 #Дженерик всех новостей
@@ -41,6 +43,15 @@ class NewsDetail(DetailView):
         context['subs_list'] = [i['pk'] for i in user.category_set.all().values('pk')]
         context['subs_list_named'] = [i['name'] for i in user.category_set.all().values('name')]
         return context
+
+    # переопределяем метод получения объекта, как ни странно
+    def get_object(self, *args, **kwargs):
+        obj = cache.get(f'post-{self.kwargs["pk"]}',None)
+
+        if not obj:
+            obj = super().get_object(*args, **kwargs)
+            cache.set(f'post-{self.kwargs["pk"]}', obj)
+        return obj
 
 #Дженерик добавления поиска
 class NewsSearch(ListView):
@@ -150,8 +161,9 @@ class Category_Sub(UpdateView):
 
 def week_digest():
     send_week_digest.delay()
-
-week_digest()
+#
+#
+# week_digest()
 
 
 

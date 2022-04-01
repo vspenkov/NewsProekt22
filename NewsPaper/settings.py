@@ -174,19 +174,140 @@ APSCHEDULER_RUN_NOW_TIMEOUT = 25  # Seconds
 
 
 #Celery
-
 CELERY_BROKER_URL = 'redis://localhost:6379'
 CELERY_RESULT_BACKEND = 'redis://localhost:6379'
 CELERY_ACCEPT_CONTENT = ['application/json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 
+#Емейл рассылка
 EMAIL_HOST = 'smtp.yandex.ru'  # адрес сервера Яндекс-почты для всех один и тот же
 EMAIL_PORT = 465  # порт smtp сервера тоже одинаковый
-EMAIL_HOST_USER = 'vladisl'  # ваше имя пользователя, например, если ваша почта user@yandex.ru, то сюда надо писать user, иными словами, это всё то что идёт до собаки
+EMAIL_HOST_USER = ''  # ваше имя пользователя, например, если ваша почта user@yandex.ru, то сюда надо писать user, иными словами, это всё то что идёт до собаки
 EMAIL_HOST_PASSWORD = ''  # пароль от почты
 EMAIL_USE_SSL = True  # Яндекс использует ssl, подробнее о том, что это, почитайте в дополнительных источниках, но включать его здесь обязательно
 
 
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER+'@yandex.ru' # здесь указываем уже свою ПОЛНУЮ почту, с которой будут отправляться письма для подтверждения аккаунта
+#Отправка в консоль, а не на почту
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+#Кэшироание
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
+        'LOCATION': os.path.join(BASE_DIR, 'cache_files'),
+    }
+}
+
+#Логгирование
+LOGGING = {
+    'version' : 1 , #Всегда единица
+    'disable_existing_loggers' : False ,
+    #Определяем типы логирования
+    'formatters' : {
+        'debug_console': {
+            'format': '%(asctime)s %(levelname)s %(message)s',
+        },
+        'warning_console': {
+            'format': '%(asctime)s %(levelname)s %(pathname)s %(message)s'
+        },
+        'error_critical': {
+            'format': '%(asctime)s %(levelname)s %(message)s %(pathname)s %(exc_info)s'
+        },
+        'general_security_log': {
+            'format': '%(asctime)s %(levelname)s %(module)s %(message)s'
+        },
+        'mail_log': {
+            'format': '%(asctime)s %(levelname)s %(pathname)s %(message)s'
+        }
+    },
+    #  фильтр, который пропускает записи в зависимости от того тру или фолс дебаг
+    'filters' : {
+        'require_debug_true': {
+            '()': 'django.utils.log.RequireDebugTrue',
+        },
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse'
+        }
+    },
+    'handlers' : {
+        # уровень DEBUG, фильтр DEBUG = True везде, кроме отправки по почте и
+        # записи в файл general.log
+        'debug_in_console' : {
+            'level': 'DEBUG',
+            'filters': ['require_debug_true'],
+            'class': 'logging.StreamHandler',
+            'formatter': 'debug_console'
+        },
+        'warning_in_console': {
+            'level': 'WARNING',
+            'filters': ['require_debug_true'],
+            'class': 'logging.StreamHandler',
+            'formatter': 'warning_console'
+        },
+        'file_general': {
+            'level': 'INFO',
+            'filters': ['require_debug_false'],
+            'class': 'logging.FileHandler',
+            'filename': 'general.log',
+            'formatter': 'general_security_log'
+        },
+
+        'file_security': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': 'security.log',
+            'formatter': 'general_security_log'
+        },
+
+        'file_errors': {
+            'level': 'ERROR',
+            'class': 'logging.FileHandler',
+            'filename': 'errors.log',
+            'formatter': 'error_critical'
+        },
+
+        'file_critical': {
+            'level': 'CRITICAL',
+            'class': 'logging.FileHandler',
+            'filename': 'errors.log',
+            'formatter': 'error_critical'
+        },
+
+        'mail_admin': {
+            'level': 'ERROR',
+            'filters': ['require_debug_false'],
+            'class': 'django.utils.log.AdminEmailHandler',
+            'formatter': 'mail_log'
+        }
+    },
+    'loggers' : {
+        'django': {
+            'handlers': ['debug_in_console', 'warning_in_console', 'file_general'],
+            'propagate': True,
+        },
+        'django.request': {
+            'handlers': ['file_errors', 'file_critical', 'mail_admin'],
+            'propagate': True,
+        },
+        'django.server': {
+            'handlers': ['file_errors', 'file_critical', 'mail_admin'],
+            'propagate': True,
+        },
+        'django.template': {
+            'handlers': ['file_errors', 'file_critical'],
+            'propagate': True,
+        },
+        'django.db.backends': {
+            'handlers': ['file_errors', 'file_critical'],
+            'propagate': True,
+        },
+        'django.security': {
+            'handlers': ['file_security'],
+            'propagate': True,
+        }
+
+    }
+}

@@ -1,0 +1,8 @@
+2022-03-31 22:54:20,953 INFO autoreload Watching for file changes with StatReloader
+2022-03-31 22:54:24,066 INFO basehttp "GET / HTTP/1.1" 200 3513
+2022-03-31 22:54:25,540 INFO basehttp "GET /news/ HTTP/1.1" 200 13534
+2022-03-31 22:54:26,977 INFO basehttp "GET /news/74 HTTP/1.1" 200 4746
+2022-03-31 22:54:36,153 INFO basehttp "GET /news/75 HTTP/1.1" 200 4711
+2022-03-31 22:54:39,291 INFO basehttp "POST /news/category/3/add/ HTTP/1.1" 302 0
+2022-03-31 22:54:39,312 INFO basehttp "GET /news/75 HTTP/1.1" 200 4713
+2022-03-31 22:55:05,296 INFO autoreload /Users/vladislavpenkov/PycharmProjects/News22/NewsPaper/NewsPaper/settings.py changed, reloading.
