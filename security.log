@@ -1,0 +1,4 @@
+2022-04-01 20:17:11,238 WARNING log Forbidden (CSRF cookie not set.): /i18n/setlang/
+2022-04-01 20:18:13,132 WARNING log Forbidden (CSRF token from POST incorrect.): /i18n/setlang/
+2022-04-01 20:19:41,106 WARNING log Forbidden (CSRF token missing.): /i18n/setlang/
+2022-04-01 20:20:07,781 WARNING log Forbidden (CSRF token missing.): /i18n/setlang/
